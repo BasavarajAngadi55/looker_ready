@@ -1,46 +1,43 @@
-view: products {
-  sql_table_name: `looker-partners.thelook.products` ;;
-  drill_fields: [id]
+include: "/views/base_events.view.lkml"
 
+view: products {
+  # Inherits created_at and updated_at date groups from base_events
+  extends: [base_events]
+  sql_table_name: `my_project.my_dataset.products` ;;
+
+  # primary_key: yes tells Looker this column uniquely identifies every row.
+  # CRITICAL for Looker to avoid fan-out errors during SQL JOINs!
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
-  dimension: brand {
+
+  dimension: name {
     type: string
-    sql: ${TABLE}.brand ;;
+    sql: ${TABLE}.name ;;
+    # Action Link: Allows users to right-click/click a product on the dashboard
+    # to search Google directly
+    link: {
+      label: "Search Product on Google"
+      url: "https://www.google.com/search?q={{ value }}"
+      icon_url: "https://google.com/favicon.ico"
+    }
   }
+
   dimension: category {
     type: string
     sql: ${TABLE}.category ;;
   }
-  dimension: cost {
-    type: number
-    sql: ${TABLE}.cost ;;
-  }
-  dimension: department {
+
+  dimension: brand {
     type: string
-    sql: ${TABLE}.department ;;
+    sql: ${TABLE}.brand ;;
   }
-  dimension: distribution_center_id {
-    type: number
-    sql: ${TABLE}.distribution_center_id ;;
-  }
-  dimension: name {
-    type: string
-    sql: ${TABLE}.name ;;
-  }
+
   dimension: retail_price {
     type: number
+    value_format_name: usd # Formats raw numbers as $1,234.56 on dashboards
     sql: ${TABLE}.retail_price ;;
-  }
-  dimension: sku {
-    type: string
-    sql: ${TABLE}.sku ;;
-  }
-  measure: count {
-    type: count
-    drill_fields: [id, name, order_items.count]
   }
 }
