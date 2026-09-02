@@ -4,12 +4,13 @@ connection: "looker_partner_demo"
 # Includes all view files from subdirectories
 include: "/views/**/*.view.lkml"
 
-# DATAGROUP: Controls caching strategy and PDT rebuild schedules
+# Inside your .model.lkml file:
+include: "/Dashboard/*.dashboard.lookml"  # or include: "*.dashboard"
+
 datagroup: ecommerce_etl_datagroup {
-  # SQL Trigger: Looker periodically runs this light query.
-  # If the MAX(id) changes, it clears the cache and rebuilds PDTs.
-  sql_trigger: SELECT MAX(id) FROM `my_project.my_dataset.order_items` ;;
-  max_cache_age: "12 hours"
+  # Time Trigger: Checks every 5 minutes to trigger PDT rebuilds if necessary.
+  interval_trigger: "5 minutes"
+  max_cache_age: "5 minutes"
 }
 
 # Tells all explores in this model to use this datagroup by default

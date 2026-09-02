@@ -7,7 +7,7 @@ view: user_summary_pdt {
         COUNT(id) AS total_items_purchased,
         SUM(sale_price) AS total_spent,
         MAX(created_at) AS last_order_date
-      FROM `my_project.my_dataset.order_items`
+      FROM `order_items`
       WHERE status = 'Complete'
       GROUP BY 1 ;;
 

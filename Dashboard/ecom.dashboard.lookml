@@ -73,8 +73,7 @@
       type: looker_pie
       fields: [user_summary_pdt.user_tier, order_items.total_revenue]
       sorts: [order_items.total_revenue desc]
-      listen:
-        country_filter: users.country
+
 
     - name: chart_top_categories
       title: "Category Revenue by Price Tier"
