@@ -6,7 +6,7 @@ view: user_metrics_ndt {
       column: total_revenue { field: order_items.total_revenue }
       column: returned_revenue { field: order_items.returned_revenue }
     }
-    datagroup_trigger: ecommerce_etl_datagroup
+    datagroup_trigger: daily_etl_datagroup
   }
 
   dimension: user_id {

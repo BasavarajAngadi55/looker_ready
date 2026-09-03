@@ -4,8 +4,6 @@
   rows:
     - elements: [kpi_total_revenue, kpi_return_rate, kpi_pop_growth]
       height: 130
-    - elements: [chart_revenue_trend, chart_user_tier_pdt]
-      height: 380
     - elements: [chart_top_categories, table_high_return_products]
       height: 420
 
@@ -53,26 +51,6 @@
       explore: order_items
       type: single_value
       fields: [order_items.pop_revenue_growth]
-
-    - name: chart_revenue_trend
-      title: "Daily Revenue Trend by Status"
-      model: ecommerce
-      explore: order_items
-      type: looker_line
-      fields: [order_items.created_date, order_items.status, order_items.total_revenue]
-      pivots: [order_items.status]
-      sorts: [order_items.created_date desc]
-      listen:
-        date_filter: order_items.created_date
-        country_filter: users.country
-
-    - name: chart_user_tier_pdt
-      title: "Revenue by Customer Tier (PDT Accelerated)"
-      model: ecommerce
-      explore: order_items
-      type: looker_pie
-      fields: [user_summary_pdt.user_tier, order_items.total_revenue]
-      sorts: [order_items.total_revenue desc]
 
 
     - name: chart_top_categories
