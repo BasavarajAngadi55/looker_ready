@@ -1,5 +1,5 @@
 view: order_items {
-  sql_table_name: `my_project.my_dataset.order_items` ;;
+  sql_table_name: `order_items` ;;
 
   dimension: id {
     primary_key: yes

@@ -3,7 +3,7 @@ include: "/views/base_events.view.lkml"
 view: products {
   # Inherits created_at and updated_at date groups from base_events
   extends: [base_events]
-  sql_table_name: `my_project.my_dataset.products` ;;
+  sql_table_name: `products` ;;
 
   # primary_key: yes tells Looker this column uniquely identifies every row.
   # CRITICAL for Looker to avoid fan-out errors during SQL JOINs!
@@ -28,7 +28,13 @@ view: products {
   dimension: category {
     type: string
     sql: ${TABLE}.category ;;
+
+    link: {
+      label: "View Category Overview"
+      url: "/dashboards/YOUR_DASHBOARD_ID?Category={{ value | url_encode }}"
+    }
   }
+
 
   dimension: brand {
     type: string

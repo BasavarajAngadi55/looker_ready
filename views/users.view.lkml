@@ -1,5 +1,5 @@
 view: users {
-  sql_table_name: `my_project.my_dataset.users` ;;
+  sql_table_name: `users` ;;
 
   dimension: id {
     primary_key: yes
