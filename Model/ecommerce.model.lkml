@@ -1,7 +1,7 @@
 # Connection name configured in your Looker Admin settings
 connection: "looker_partner_demo"
 
-# Includes all view files from subdirectoriess
+# Includes all view files from subdirectoriessghgjgkgkgkgk
 include: "/views/**/*.view.lkml"
 
 # Inside your .model.lkml files:
