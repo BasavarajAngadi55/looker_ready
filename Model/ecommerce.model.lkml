@@ -9,8 +9,8 @@ include: "/Dashboard/*.dashboard.lookml"  # or include: "*.dashboard"
 
 datagroup: ecommerce_etl_datagroup {
   # Time Trigger: Checks every 5 minutes to trigger PDT rebuilds if necessary.
-  interval_trigger: "5 minutes"
-  max_cache_age: "5 minutes"
+  interval_trigger: "24 hours"
+  max_cache_age: "24 hours"
 }
 
 # Tells all explores in this model to use this datagroup by default
@@ -19,6 +19,9 @@ persist_with: ecommerce_etl_datagroup
 # EXPLORE: Defines how views are joined together for reporting and dashboard tiles
 explore: order_items {
   label: "Executive Ecommerce Analysis"
+
+  # Explicitly applying datagroup to this explore
+  persist_with: ecommerce_etl_datagroup
 
   # JOIN 1: Users View
   join: users {
