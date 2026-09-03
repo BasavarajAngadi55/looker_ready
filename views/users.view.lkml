@@ -1,72 +1,45 @@
 view: users {
-  sql_table_name: `looker-partners.thelook.users` ;;
-  drill_fields: [id]
+  sql_table_name: `users` ;;
 
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
-  dimension: age {
-    type: number
-    sql: ${TABLE}.age ;;
-  }
-  dimension: city {
-    type: string
-    sql: ${TABLE}.city ;;
-  }
-  dimension: country {
-    type: string
-    map_layer_name: countries
-    sql: ${TABLE}.country ;;
-  }
-  dimension_group: created {
-    type: time
-    timeframes: [raw, time, date, week, month, quarter, year]
-    sql: ${TABLE}.created_at ;;
-  }
-  dimension: email {
-    type: string
-    sql: ${TABLE}.email ;;
-  }
+
+  # hidden: yes keeps raw first/last name out of the field picker to avoid visual clutter
   dimension: first_name {
     type: string
+    hidden: yes
     sql: ${TABLE}.first_name ;;
   }
-  dimension: gender {
-    type: string
-    sql: ${TABLE}.gender ;;
-  }
+
   dimension: last_name {
     type: string
+    hidden: yes
     sql: ${TABLE}.last_name ;;
   }
-  dimension: latitude {
-    type: number
-    sql: ${TABLE}.latitude ;;
-  }
-  dimension: longitude {
-    type: number
-    sql: ${TABLE}.longitude ;;
-  }
-  dimension: postal_code {
+
+  # Combines two columns into one clean dimension
+  dimension: name {
     type: string
-    sql: ${TABLE}.postal_code ;;
+    sql: CONCAT(${first_name}, ' ', ${last_name}) ;;
+    # Deep-link: Clicking a user's name navigates to a dedicated User Detail Dashboard
+    link: {
+      label: "User Detail Dashboard"
+      url: "/dashboards/user_lookup?User%20ID={{ users.id._value }}"
+    }
   }
-  dimension: state {
+
+  # Dynamic HTML Styling: Formats output with flags and colors directly on tiles
+  dimension: country {
     type: string
-    sql: ${TABLE}.state ;;
-  }
-  dimension: street_address {
-    type: string
-    sql: ${TABLE}.street_address ;;
-  }
-  dimension: traffic_source {
-    type: string
-    sql: ${TABLE}.traffic_source ;;
-  }
-  measure: count {
-    type: count
-    drill_fields: [id, last_name, first_name, order_items.count]
+    sql: ${TABLE}.country ;;
+    html:
+      {% if value == 'USA' %}
+        <span style="color: #2e7d32; font-weight: bold; background-color: #e8f5e9; padding: 2px 6px; border-radius: 4px;">🇺🇸 {{ value }}</span>
+      {% else %}
+        <span style="color: #333333;">🌐 {{ value }}</span>
+      {% endif %} ;;
   }
 }

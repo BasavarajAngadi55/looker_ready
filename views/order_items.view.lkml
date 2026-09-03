@@ -1,73 +1,58 @@
 view: order_items {
-  sql_table_name: `looker-partners.thelook.order_items` ;;
-  drill_fields: [id]
+  sql_table_name: `order_items` ;;
 
   dimension: id {
     primary_key: yes
     type: number
     sql: ${TABLE}.id ;;
   }
+
+  dimension: order_id {
+    type: number
+    sql: ${TABLE}.order_id ;;
+  }
+
+  # Foreign keys used for JOINing tables (hidden to clean up UI)
+  dimension: user_id {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.user_id ;;
+  }
+
+  dimension: product_id {
+    type: number
+    hidden: yes
+    sql: ${TABLE}.product_id ;;
+  }
+
+  dimension: sale_price {
+    type: number
+    value_format_name: usd
+    sql: ${TABLE}.sale_price ;;
+  }
+
+  dimension: status {
+    type: string
+    sql: ${TABLE}.status ;; # e.g. 'Complete', 'Processing', 'Returned'
+  }
+
   dimension_group: created {
     type: time
     timeframes: [raw, time, date, week, month, quarter, year]
     sql: ${TABLE}.created_at ;;
   }
-  dimension_group: delivered {
-    type: time
-    timeframes: [raw, time, date, week, month, quarter, year]
-    sql: ${TABLE}.delivered_at ;;
-  }
-  dimension: inventory_item_id {
-    type: number
-    sql: ${TABLE}.inventory_item_id ;;
-  }
-  dimension: order_id {
-    type: number
-    sql: ${TABLE}.order_id ;;
-  }
-  dimension: product_id {
-    type: number
-    # hidden: yes
-    sql: ${TABLE}.product_id ;;
-  }
-  dimension_group: returned {
-    type: time
-    timeframes: [raw, time, date, week, month, quarter, year]
-    sql: ${TABLE}.returned_at ;;
-  }
-  dimension: sale_price {
-    type: number
-    sql: ${TABLE}.sale_price ;;
-  }
-  dimension_group: shipped {
-    type: time
-    timeframes: [raw, time, date, week, month, quarter, year]
-    sql: ${TABLE}.shipped_at ;;
-  }
-  dimension: status {
-    type: string
-    sql: ${TABLE}.status ;;
-  }
-  dimension: user_id {
-    type: number
-    # hidden: yes
-    sql: ${TABLE}.user_id ;;
-  }
+
+  # Measure: Aggregates data (SQL COUNT)
   measure: count {
     type: count
-    drill_fields: [detail*]
+    # drill_fields defines what detailed table pops up when a user clicks this count on a dashboard
+    drill_fields: [id, order_id, users.name, products.name, sale_price]
   }
 
-  # ----- Sets of fields for drilling ------
-  set: detail {
-    fields: [
-	id,
-	users.last_name,
-	users.id,
-	users.first_name,
-	products.name,
-	products.id
-	]
+  # Measure: Sums up sale_price
+  measure: total_revenue {
+    type: sum
+    sql: ${sale_price} ;;
+    value_format_name: usd
   }
-
 }
