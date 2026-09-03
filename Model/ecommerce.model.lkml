@@ -4,7 +4,7 @@ connection: "looker_partner_demo"
 # Includes all view files from subdirectoriess
 include: "/views/**/*.view.lkml"
 
-# Inside your .model.lkml file:
+# Inside your .model.lkml files:
 include: "/Dashboard/*.dashboard.lookml"  # or include: "*.dashboard"
 
 datagroup: daily_etl_datagroup {
