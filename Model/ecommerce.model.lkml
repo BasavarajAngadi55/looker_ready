@@ -9,7 +9,7 @@ include: "/Dashboard/*.dashboard.lookml"  # or include: "*.dashboard"
 
 datagroup: daily_etl_datagroup {
   # 1. Looker runs this query periodically to check for changes
-  sql_trigger: SELECT MAX(id) FROM demo_db.orders ;;
+  sql_trigger: SELECT MAX(id) FROM order_items ;;
 
   # 2. Maximum time cache/PDT stays valid if the trigger hasn't changed
   max_cache_age: "24 hours"
