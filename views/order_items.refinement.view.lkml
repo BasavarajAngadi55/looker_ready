@@ -3,7 +3,7 @@ include: "/views/order_items.view.lkml"
 view: +order_items {
 
   # ===================================================================
-  # 1. SINGLE TARGET DATE CONTROLLER FILTER (Template Filter))))))
+  # 1. SINGLE TARGET DATE CONTROLLER FILTER (Template Filter)
   # ===================================================================
   filter: target_date {
     label: "PoP: Select Target Date"
@@ -12,7 +12,17 @@ view: +order_items {
   }
 
   # ===================================================================
-  # 2. TYPE-SAFE BIGQUERY MEASURES (Converts Liquid Timestamp to Date)
+  # 2. BASE MEASURE (Required by Native PoP)
+  # ===================================================================
+  measure: total_sale_price {
+    label: "Total Sales"
+    type: sum
+    sql: ${TABLE}.sale_price ;;
+    value_format_name: usd
+  }
+
+  # ===================================================================
+  # 3. TYPE-SAFE BIGQUERY MEASURES (Single-Date Scorecard Engine)
   # ===================================================================
 
   # A. Selected Day Value
@@ -120,6 +130,54 @@ view: +order_items {
         ELSE NULL
       END ;;
     value_format_name: usd
+  }
+
+  # ===================================================================
+  # 4. NATIVE LOOKER PERIOD-OVER-PERIOD MEASURES
+  # ===================================================================
+
+  # A. Year-over-Year (YoY) Prior Period Value
+  measure: total_sales_prior_year {
+    label: "Total Sales (Prior Year)"
+    type: period_over_period
+    based_on: total_sale_price
+    based_on_time: created_date
+    period: year
+    kind: previous
+    value_format_name: usd
+  }
+
+  # B. Year-over-Year (YoY) Percentage Growth
+  measure: total_sales_yoy_growth {
+    label: "Sales YoY Growth %"
+    type: period_over_period
+    based_on: total_sale_price
+    based_on_time: created_date
+    period: year
+    kind: relative_change
+    value_format_name: percent_2
+  }
+
+  # C. Month-over-Month (MoM) Prior Period Value
+  measure: total_sales_prior_month {
+    label: "Total Sales (Prior Month)"
+    type: period_over_period
+    based_on: total_sale_price
+    based_on_time: created_date
+    period: month
+    kind: previous
+    value_format_name: usd
+  }
+
+  # D. Month-over-Month (MoM) Percentage Growth
+  measure: total_sales_mom_growth {
+    label: "Sales MoM Growth %"
+    type: period_over_period
+    based_on: total_sale_price
+    based_on_time: created_date
+    period: month
+    kind: relative_change
+    value_format_name: percent_2
   }
 
 }
