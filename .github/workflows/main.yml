@@ -1,0 +1,14 @@
+name: Manual Deploy LookML to Production
+
+on:
+  workflow_dispatch: # Enables the manual "Run workflow" button in GitHub
+
+jobs:
+  deploy-looker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Production Looker Deployment Webhook
+        run: |
+          curl -X POST "https://panderasystems.looker.com/webhooks/projects/project-c/deploy" \
+            -H "X-Looker-Deploy-Secret: ${{ secrets.Test }}"
