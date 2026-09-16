@@ -10,8 +10,6 @@ view: user_summary_pdt_1 {
     WHERE status = 'Shipped'
     GROUP BY 1 ;;
 
-    # Rebuilds using a datagroup (or use persist_for: "24 hours" for testing)
-    datagroup_trigger: five_minute_testing_datagroup
   }
 
   dimension: user_id {
