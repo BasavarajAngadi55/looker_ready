@@ -69,5 +69,44 @@ view: order_items {
     value_format_name: usd
   }
 
+  dimension: sales_tier {
+    type: string
+    sql: CASE
+        WHEN ${sale_price} > 500 THEN 'High'
+        WHEN ${sale_price} BETWEEN 100 AND 500 THEN 'Medium'
+        ELSE 'Low'
+       END ;;
+  }
+# Filter field exposed in the UI for filtering users by purchased product category
+  filter: user_purchased_category_filter {
+    type: string
+    suggest_dimension: products.category
+  }
 
+  #  Hidden dimension generating the subquery
+  dimension: user_has_purchased_category {
+    type: yesno
+    hidden: yes
+    sql:
+      ${user_id} IN (
+        SELECT DISTINCT oi_sub.user_id
+        FROM `order_items` oi_sub
+        LEFT JOIN `products` p_sub ON oi_sub.product_id = p_sub.id
+        WHERE {% condition user_purchased_category_filter %} p_sub.category {% endcondition %}
+      ) ;;
+  }
+
+  # Measure for distinct orders count from the items level
+  measure: order_count {
+    type: count_distinct
+    sql: ${order_id} ;;
+  }
+
+# Isolated metric for the single targeted tile
+  measure: revenue_from_category_buyers {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: [user_has_purchased_category: "yes"]
+    value_format_name: usd
+  }
 }

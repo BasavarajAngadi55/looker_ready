@@ -11,7 +11,7 @@ view: user_summary_pdt_1 {
     GROUP BY 1 ;;
 
     # Rebuilds using a datagroup (or use persist_for: "24 hours" for testing)
-    datagroup_trigger: daily_etl_datagroup
+    datagroup_trigger: five_minute_testing_datagroup
   }
 
   dimension: user_id {

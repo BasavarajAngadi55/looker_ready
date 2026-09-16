@@ -17,6 +17,13 @@ datagroup: daily_etl_datagroup {
 # Tells all explores in this model to use this datagroup by default
 persist_with: daily_etl_datagroup
 
+datagroup: five_minute_testing_datagroup {
+  # BigQuery-specific 5-minute bucket calculation
+  sql_trigger: SELECT DIV(UNIX_SECONDS(CURRENT_TIMESTAMP()), 300) ;;
+  max_cache_age: "5 minutes"
+}
+
+
 # EXPLORE: Defines how views are joined together for reporting and dashboard tiles
 explore: order_items {
   label: "Executive Ecommerce Analysis"
@@ -58,4 +65,14 @@ explore: order_items {
       relationship: one_to_one
       sql_on: ${users.id} = ${user_summary_pdt_1.user_id} ;;
     }
+
+# Inject subquery filter automatically when user interacts with the category filter
+  sql_always_where:
+    {% if order_items.user_purchased_category_filter._is_filtered %}
+      ${order_items.user_has_purchased_category}
+    {% else %}
+      1=1
+    {% endif %} ;;
+
+
   }
