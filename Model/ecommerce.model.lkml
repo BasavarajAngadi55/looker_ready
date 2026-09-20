@@ -17,11 +17,7 @@ datagroup: daily_etl_datagroup {
 # Tells all explores in this model to use this datagroup by default
 persist_with: daily_etl_datagroup
 
-datagroup: five_minute_testing_datagroup {
-  # BigQuery-specific 5-minute bucket calculation
-  sql_trigger: SELECT DIV(UNIX_SECONDS(CURRENT_TIMESTAMP()), 300) ;;
-  max_cache_age: "5 minutes"
-}
+
 
 
 # EXPLORE: Defines how views are joined together for reporting and dashboard tiles
