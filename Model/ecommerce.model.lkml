@@ -1,11 +1,15 @@
 # Connection name configured in your Looker Admin settings
 connection: "looker_partner_demo"
 
-# Includes all view files from subdirectories----manual
+# Includes all view files from subdirectories----manualjklihshsj
 include: "/views/**/*.view.lkml"
 
 # Inside your .model.lkml files:
 include: "/Dashboard/*.dashboard.lookml"  # or include: "*.dashboard"
+
+
+# February 1 fiscal start date
+fiscal_month_offset: 1
 
 datagroup: daily_etl_datagroup {
   # 1. Looker runs this query periodically to check for changes
