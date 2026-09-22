@@ -180,4 +180,28 @@ view: +order_items {
     value_format_name: percent_2
   }
 
+# --- DEDICATED FISCAL GROUP ---
+# 1. The Fiscal Month Number (used for sorting)
+  dimension_group: created_fiscal {
+    type: time
+    timeframes: [
+      fiscal_month_num, # Numbers 1-12
+      fiscal_quarter,
+      fiscal_year
+    ]
+    datatype: timestamp
+    group_label: "Created Date (Fiscal)"
+    sql: ${TABLE}.created_at ;;
+  }
+
+# 2. The Fiscal Month Name (sorted by the fiscal month number)
+  dimension: created_fiscal_month_name {
+    type: string
+    group_label: "Created Date (Fiscal)"
+    label: "Created Fiscal Month Name"
+    order_by_field: created_fiscal_fiscal_month_num
+    sql: FORMAT_DATETIME('%B', DATETIME(${TABLE}.created_at)) ;;
+
+}
+
 }
