@@ -45,26 +45,7 @@ explore: order_items {
     sql_on: ${order_items.product_id} = ${products.id} ;;
   }
 
-  # JOIN 3: Persistent Derived Table (PDT)
-  join: user_summary_pdt {
-    type: left_outer
-    relationship: many_to_one
-    sql_on: ${order_items.user_id} = ${user_summary_pdt.user_id} ;;
-  }
 
-  # JOIN 4: Native Derived Table (NDT)
-  join: user_metrics_ndt {
-    type: left_outer
-    relationship: many_to_one
-    sql_on: ${order_items.user_id} = ${user_metrics_ndt.user_id} ;;
-  }
-
-
-    join: user_summary_pdt_1 {
-      type: left_outer
-      relationship: one_to_one
-      sql_on: ${users.id} = ${user_summary_pdt_1.user_id} ;;
-    }
 
 # Inject subquery filter automatically when user interacts with the category filter
   sql_always_where:
