@@ -38,22 +38,4 @@ explore: order_items {
     sql_on: ${order_items.user_id} = ${users.id} ;;
   }
 
-  # JOIN 2: Products View
-  join: products {
-    type: left_outer
-    relationship: many_to_one # Many order items belong to 1 product
-    sql_on: ${order_items.product_id} = ${products.id} ;;
-  }
-
-
-
-# Inject subquery filter automatically when user interacts with the category filter
-  sql_always_where:
-    {% if order_items.user_purchased_category_filter._is_filtered %}
-      ${order_items.user_has_purchased_category}
-    {% else %}
-      1=1
-    {% endif %} ;;
-
-
   }
