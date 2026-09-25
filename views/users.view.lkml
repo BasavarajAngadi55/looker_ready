@@ -19,9 +19,13 @@ view: users {
     hidden: yes
     sql: ${TABLE}.last_name ;;
   }
-  measure: total_users {
-    type: count_distinct
-    sql: ${id} ;;
 
-}
+
+
+      measure: total_registered_users {
+        type: number
+        sql: (SELECT COUNT(DISTINCT id) FROM ${TABLE}) ;;
+        description: "Total count of all registered users regardless of order history"
+      }
+
 }
