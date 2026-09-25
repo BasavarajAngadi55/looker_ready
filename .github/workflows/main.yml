@@ -1,29 +1,23 @@
 name: LookML CI/CD Pipeline
 
 on:
-  # 1. Automatic CI trigger when a Pull Request is opened/updated targeting main or master
-  pull_request:
-    branches:
-      - main
-      - master
-
-  # 2. Manual trigger button in GitHub Actions UI
+  # Manual trigger button in GitHub Actions UI
   workflow_dispatch:
 
 jobs:
   # =========================================================
-  # JOB 1: Continuous Integration (CI)
-  # Runs on project_b on Pull Requests OR when manually triggered
+  # STEP 1: Continuous Integration (CI) - RUNS FIRST
+  # Validates LookML and executes data tests on project_b
   # =========================================================
   ci-validate:
-    name: Validate LookML & Run Tests
-    # UPDATED: Runs on PRs AND on manual workflow_dispatch triggers
-    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    name: Validate LookML & Run Tests (project_b)
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches full git history
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -35,7 +29,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install spectacles
 
-      # Step A: Run LookML Compiler Check on project_b via Looker REST API
+      # Step A: LookML Validation Check via Looker REST API
       - name: Run LookML Compiler Check on project_b
         env:
           LOOKER_BASE_URL: "https://panderasystems.looker.com"
@@ -44,10 +38,10 @@ jobs:
         run: |
           spectacles lookml \
             --project project_b \
-            --branch ${{ github.head_ref || github.ref_name }} \
+            --branch ${{ github.ref_name }} \
             --remote-reset
 
-      # Step B: Execute Data Assertions on project_b via Looker REST API
+      # Step B: Data Assertion Tests via Looker REST API
       - name: Execute LookML Data Assertions on project_b
         env:
           LOOKER_BASE_URL: "https://panderasystems.looker.com"
@@ -56,15 +50,15 @@ jobs:
         run: |
           spectacles assert \
             --project project_b \
-            --branch ${{ github.head_ref || github.ref_name }}
+            --branch ${{ github.ref_name }}
 
   # =========================================================
-  # JOB 2: Continuous Deployment (CD)
-  # Deploys code to project_c via Webhook when manually triggered
+  # STEP 2: Continuous Deployment (CD) - RUNS ONLY IF STEP 1 PASSES
+  # Deploys code to project_c via Webhook
   # =========================================================
   cd-deploy:
     name: Deploy to Production (project_c)
-    if: github.event_name == 'workflow_dispatch'
+    needs: ci-validate # CRITICAL: Guarantees Step 1 runs FIRST and MUST pass
     runs-on: ubuntu-latest
 
     steps:
