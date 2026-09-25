@@ -1,10 +1,69 @@
-name: Manual Deploy LookML to Production
+name: LookML CI/CD Pipeline
 
 on:
-  workflow_dispatch: # Enables the manual "Run workflow" button in GitHub
+  # 1. Automatic CI trigger when a Pull Request is opened or updated targeting main
+  pull_request:
+    branches:
+      - main
+      - master
+
+  # 2. Manual CD trigger button in GitHub Actions
+  workflow_dispatch:
 
 jobs:
-  deploy-looker:
+  # ==========================================
+  # JOB 1: Continuous Integration (CI)
+  # Runs on project_b PRs using Looker REST API
+  # ==========================================
+  ci-validate:
+    name: Validate LookML & Run Tests
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Spectacles
+        run: |
+          python -m pip install --upgrade pip
+          pip install spectacles
+
+      # Step A: Run LookML Validator via Looker API 4.0
+      - name: Run LookML Compiler Check on project_b
+        env:
+          LOOKER_BASE_URL: "https://panderasystems.looker.com"
+          LOOKER_CLIENT_ID: ${{ secrets.LOOKER_CLIENT_ID }}
+          LOOKER_CLIENT_SECRET: ${{ secrets.LOOKER_CLIENT_SECRET }}
+        run: |
+          spectacles lookml \
+            --project project_b \
+            --branch ${{ github.head_ref }} \
+            --remote-reset
+
+      # Step B: Run Data Assertions (test blocks) via Looker API 4.0
+      - name: Execute LookML Data Assertions on project_b
+        env:
+          LOOKER_BASE_URL: "https://panderasystems.looker.com"
+          LOOKER_CLIENT_ID: ${{ secrets.LOOKER_CLIENT_ID }}
+          LOOKER_CLIENT_SECRET: ${{ secrets.LOOKER_CLIENT_SECRET }}
+        run: |
+          spectacles assert \
+            --project project_b \
+            --branch ${{ github.head_ref }}
+
+  # ==========================================
+  # JOB 2: Continuous Deployment (CD)
+  # Deploys merged code to project_c via Webhook
+  # ==========================================
+  cd-deploy:
+    name: Deploy to Production (project_c)
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
