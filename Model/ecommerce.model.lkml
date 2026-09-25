@@ -4,6 +4,8 @@ connection: "looker_partner_demo"
 # Includes all view files from subdirectories----manualjklihshsj
 include: "/views/**/*.view.lkml"
 
+include: "/tests/*.lkml"
+
 # Inside your .model.lkml files:
 include: "/Dashboard/*.dashboard.lookml"  # or include: "*.dashboard"
 
