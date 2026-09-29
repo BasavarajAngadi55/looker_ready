@@ -25,19 +25,24 @@ persist_with: daily_etl_datagroup
 
 
 
-
-# EXPLORE: Defines how views are joined together for reporting and dashboard tiles
 explore: order_items {
   label: "Executive Ecommerce Analysis"
-
-  # Explicitly applying datagroup to this explore
   persist_with: daily_etl_datagroup
 
-  # JOIN 1: Users View
   join: users {
     type: left_outer
-    relationship: many_to_one # Many order items belong to 1 user
-    sql_on: ${order_items.user_id} = ${users.id} ;;
+    relationship: many_to_one
+    sql_on: ${order_items.user_id} =${users.id} ;;
+
+    # Overrides the underlying view's table dynamically based on mode
+    from: users
+    sql_table_name:
+      {% if dev_mode %}
+        (SELECT 1 AS id, 'Dev User' AS name)
+      {% else %}
+        `your_gcp_project.your_dataset.users`
+      {% endif %} ;;
   }
+
 
   }
