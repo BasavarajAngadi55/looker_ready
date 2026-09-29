@@ -1,18 +1,16 @@
 # Connection name configured in your Looker Admin settings
 connection: "looker_partner_demo"
 
-# Includes all view files from subdirectories----manualjklihshsj
+# LookML Includes (All includes grouped at the top)
 include: "/views/**/*.view.lkml"
-
+include: "/views/check.view.lkml"
 include: "/tests/*.lkml"
+include: "/Dashboard/*.dashboard.lookml"
 
-# Inside your .model.lkml files:
-include: "/Dashboard/*.dashboard.lookml"  # or include: "*.dashboard"
-
-
-# February 1 fiscal start date
+# Fiscal offset configuration
 fiscal_month_offset: 1
 
+# Caching & Datagroup Configurations
 datagroup: daily_etl_datagroup {
   # 1. Looker runs this query periodically to check for changes
   sql_trigger: SELECT MAX(id) FROM order_items ;;
@@ -20,10 +18,12 @@ datagroup: daily_etl_datagroup {
   # 2. Maximum time cache/PDT stays valid if the trigger hasn't changed
   max_cache_age: "24 hours"
 }
+
 # Tells all explores in this model to use this datagroup by default
 persist_with: daily_etl_datagroup
 
 
+# EXPLORE DEFINITIONS
 
 explore: order_items {
   label: "Executive Ecommerce Analysis"
@@ -32,17 +32,11 @@ explore: order_items {
   join: users {
     type: left_outer
     relationship: many_to_one
-    sql_on: ${order_items.user_id} =${users.id} ;;
-
-    # Overrides the underlying view's table dynamically based on mode
-    from: users
-    sql_table_name:
-      {% if dev_mode %}
-        (SELECT 1 AS id, 'Dev User' AS name)
-      {% else %}
-        `your_gcp_project.your_dataset.users`
-      {% endif %} ;;
+    sql_on: ${order_items.user_id} = ${users.id} ;;
   }
+}
 
-
-  }
+# Simple explore definition referencing test_dev_mode view
+explore: check {
+  label: "Dev/Prod Test Explore"
+}

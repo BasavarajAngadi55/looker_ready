@@ -1,9 +1,22 @@
-view: test_dev_mode {
+view: check {
+  parameter: select_environment {
+    type: unquoted
+    default_value: "prod"
+    allowed_value: {
+      label: "Dev Mode"
+      value: "dev"
+    }
+    allowed_value: {
+      label: "Prod Mode"
+      value: "prod"
+    }
+  }
+
   sql_table_name:
-    {% if dev_mode %}
-      (SELECT 1 AS id, 'Dev Data - Row 1' AS environment)
+    {% if select_environment._parameter_value == 'dev' %}
+      (SELECT 1 AS id, 'Dev Mode Active' AS environment)
     {% else %}
-      (SELECT 100 AS id, 'Prod Data - Row 1' AS environment)
+      (SELECT 100 AS id, 'Prod Mode Active' AS environment)
     {% endif %} ;;
 
   dimension: id {
