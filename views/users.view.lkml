@@ -7,7 +7,6 @@ view: users {
     sql: ${TABLE}.id ;;
   }
 
-  # hidden: yes keeps raw first/last name out of the field picker to avoid visual clutter
   dimension: first_name {
     type: string
     hidden: yes
@@ -20,12 +19,16 @@ view: users {
     sql: ${TABLE}.last_name ;;
   }
 
+  # Primary count measure for user IDs
+  measure: count {
+    type: count_distinct
+    sql: ${id} ;;
+    description: "Distinct count of user IDs"
+  }
 
-
-      measure: total_registered_users {
-        type: number
-        sql: (SELECT COUNT(DISTINCT id) FROM ${TABLE}) ;;
-        description: "Total count of all registered users regardless of order history"
-      }
-
+  # Alternative count using standard count
+  measure: total_registered_users {
+    type: count
+    description: "Total count of registered user records"
+  }
 }
