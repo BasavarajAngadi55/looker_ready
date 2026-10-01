@@ -3,7 +3,6 @@ connection: "looker_partner_demo"
 
 # LookML Includes (All includes grouped at the top)
 include: "/views/**/*.view.lkml"
-include: "/views/check.view.lkml"
 include: "/tests/*.lkml"
 include: "/Dashboard/*.dashboard.lookml"
 
@@ -34,9 +33,4 @@ explore: order_items {
     relationship: many_to_one
     sql_on: ${order_items.user_id} = ${users.id} ;;
   }
-}
-
-# Simple explore definition referencing test_dev_mode view
-explore: check {
-  label: "Dev/Prod Test Explore"
 }
