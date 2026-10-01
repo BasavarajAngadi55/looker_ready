@@ -65,4 +65,4 @@ jobs:
       - name: Trigger Production Looker Deployment Webhook
         run: |
           curl -X POST "https://panderasystems.looker.com/webhooks/projects/project_c/deploy/branch/main" \
-            -H "X-Looker-Deploy-Secret: ${{ secrets.Test }}"
+            -H "X-Looker-Deploy-Secret: ${{ secrets.TEST }}"
