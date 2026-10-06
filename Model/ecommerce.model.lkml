@@ -34,3 +34,36 @@ explore: order_items {
     sql_on: ${order_items.user_id} = ${users.id} ;;
   }
 }
+
+
+
+explore: fact_sales {
+  label: "Sales vs Category Targets"
+
+  # Join Dimensions
+  join: store {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${fact_sales.store_id} = ${store.store_id} ;;
+  }
+
+  join: cat {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${fact_sales.category_id} = ${cat.category_id} ;;
+  }
+
+  join: prod {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${fact_sales.product_id} = ${prod.product_id} ;;
+  }
+
+  # Join Target table ONLY on shared keys (Store + Category)
+  join: fact_category_targets {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${fact_sales.store_id} = ${fact_category_targets.store_id}
+      AND ${fact_sales.category_id} = ${fact_category_targets.category_id} ;;
+  }
+}

@@ -15,7 +15,7 @@ view: order_items {
   # Foreign keys used for JOINing tables (hidden to clean up UI)
   dimension: user_id {
     type: number
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.user_id ;;
   }
 
