@@ -7,7 +7,6 @@ view: users {
     sql: ${TABLE}.id ;;
   }
 
-  # hidden: yes keeps raw first/last name out of the field picker to avoid visual clutter
   dimension: first_name {
     type: string
     hidden: yes
@@ -20,26 +19,16 @@ view: users {
     sql: ${TABLE}.last_name ;;
   }
 
-  # Combines two columns into one clean dimension
-  dimension: name {
-    type: string
-    sql: CONCAT(${first_name}, ' ', ${last_name}) ;;
-    # Deep-link: Clicking a user's name navigates to a dedicated User Detail Dashboard
-    link: {
-      label: "User Detail Dashboard"
-      url: "/dashboards/user_lookup?User%20ID={{ users.id._value }}"
-    }
+  # Primary count measure for user IDs
+  measure: count {
+    type: count_distinct
+    sql: ${id} ;;
+    description: "Distinct count of user IDs"
   }
 
-  # Dynamic HTML Styling: Formats output with flags and colors directly on tiles
-  dimension: country {
-    type: string
-    sql: ${TABLE}.country ;;
-    html:
-      {% if value == 'USA' %}
-        <span style="color: #2e7d32; font-weight: bold; background-color: #e8f5e9; padding: 2px 6px; border-radius: 4px;">🇺🇸 {{ value }}</span>
-      {% else %}
-        <span style="color: #333333;">🌐 {{ value }}</span>
-      {% endif %} ;;
+  # Alternative count using standard count
+  measure: total_registered_users {
+    type: count
+    description: "Total count of registered user records"
   }
 }

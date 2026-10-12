@@ -15,7 +15,7 @@ view: order_items {
   # Foreign keys used for JOINing tables (hidden to clean up UI)
   dimension: user_id {
     type: number
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.user_id ;;
   }
 
@@ -55,4 +55,28 @@ view: order_items {
     sql: ${sale_price} ;;
     value_format_name: usd
   }
+
+# 2. Count of entities (e.g., users or orders)
+  measure: total_users {
+    type: count_distinct
+    sql: ${user_id} ;;
+  }
+
+# 3. Average of the summed revenue per user
+  measure: average_revenue_per_user {
+    type: number
+    sql: 1.0 * ${total_revenue} / NULLIF(${total_users}, 0) ;;
+    value_format_name: usd
+  }
+
+  dimension: sales_tier {
+    type: string
+    sql: CASE
+        WHEN ${sale_price} > 500 THEN 'High'
+        WHEN ${sale_price} BETWEEN 100 AND 500 THEN 'Medium'
+        ELSE 'Low'
+       END ;;
+  }
+
+
 }

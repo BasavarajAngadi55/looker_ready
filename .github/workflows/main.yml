@@ -1,0 +1,68 @@
+name: LookML CI/CD Pipeline
+
+on:
+  # Manual trigger button in GitHub Actions UI
+  workflow_dispatch:
+
+jobs:
+  # =========================================================
+  # STEP 1: Continuous Integration (CI) - RUNS FIRST
+  # Validates LookML and executes data tests on project_b
+  # =========================================================
+  ci-validate:
+    name: Validate LookML & Run Tests (project_b)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetches full git history
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Spectacles
+        run: |
+          python -m pip install --upgrade pip
+          pip install spectacles
+
+      # Step A: LookML Validation Check via Looker REST API
+      - name: Run LookML Compiler Check on project_b
+        env:
+          LOOKER_BASE_URL: "https://panderasystems.looker.com"
+          LOOKER_CLIENT_ID: ${{ secrets.LOOKER_CLIENT_ID }}
+          LOOKER_CLIENT_SECRET: ${{ secrets.LOOKER_CLIENT_SECRET }}
+        run: |
+          spectacles lookml \
+            --project project_b \
+            --branch ${{ github.ref_name }} \
+            --remote-reset
+
+      # Step B: Data Assertion Tests via Looker REST API
+      - name: Execute LookML Data Assertions on project_b
+        env:
+          LOOKER_BASE_URL: "https://panderasystems.looker.com"
+          LOOKER_CLIENT_ID: ${{ secrets.LOOKER_CLIENT_ID }}
+          LOOKER_CLIENT_SECRET: ${{ secrets.LOOKER_CLIENT_SECRET }}
+        run: |
+          spectacles assert \
+            --project project_b \
+            --branch ${{ github.ref_name }}
+
+  # =========================================================
+  # STEP 2: Continuous Deployment (CD) - RUNS ONLY IF STEP 1 PASSES
+  # Deploys code to project_c via Webhook
+  # =========================================================
+  cd-deploy:
+    name: Deploy to Production (project_c)
+    needs: ci-validate # CRITICAL: Guarantees Step 1 runs FIRST and MUST pass
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Production Looker Deployment Webhook
+        run: |
+          curl -X POST "https://panderasystems.looker.com/webhooks/projects/project_c/deploy/branch/main" \
+            -H "X-Looker-Deploy-Secret: ${{ secrets.TEST }}"
