@@ -21,7 +21,7 @@ view: order_items {
 
   dimension: product_id {
     type: number
-    hidden: yes
+    hidden: no
     sql: ${TABLE}.product_id ;;
   }
 

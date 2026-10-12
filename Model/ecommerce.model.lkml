@@ -33,6 +33,31 @@ explore: order_items {
     relationship: many_to_one
     sql_on: ${order_items.user_id} = ${users.id} ;;
   }
+
+# Join Product-Level Aggregate Derived Table
+  join: product_order_summary {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${order_items.product_id} = ${product_order_summary.product_id} ;;
+  }
+
+  join: user_order_stats {
+    type: left_outer
+    relationship: many_to_one
+    sql_on: ${order_items.user_id} = ${user_order_stats.user_id} ;;
+  }
+
+# --- Aggregate Awareness Configuration ---
+  aggregate_table: product_daily_summary {
+    query: {
+      dimensions: [product_id]
+      measures: [total_revenue]
+    }
+    materialization: {
+      datagroup_trigger: daily_etl_datagroup
+    }
+  }
+
 }
 
 
@@ -66,4 +91,6 @@ explore: fact_sales {
     sql_on: ${fact_sales.store_id} = ${fact_category_targets.store_id}
       AND ${fact_sales.category_id} = ${fact_category_targets.category_id} ;;
   }
+
+
 }
