@@ -1,0 +1,32 @@
+name: Swap Manifest for Prod
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Swap Dev Dummies for Prod Dummies
+        run: |
+          # Replace the dummy dataset
+          sed -i 's/value: "dev_dummy_dataset"/value: "prod_dummy_dataset"/g' manifest.lkml
+          
+          # Replace the dummy prefix
+          sed -i 's/value: "dev_dummy_prefix"/value: "prod_dummy_prefix"/g' manifest.lkml
+
+      - name: Commit and Push back to Main
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.lkml
+          
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-swapped dummy values for Prod Project" && git push)
