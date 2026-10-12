@@ -6,7 +6,7 @@
   elements:
   - title: www
     name: www
-    model: "@{model_name}"
+    model: "ecommerce"
     explore: fact_sales
     type: table
     fields: [cat.category_id, cat.category_name, store.store_id, fact_sales.total_sales,

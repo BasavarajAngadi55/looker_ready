@@ -1,5 +1,6 @@
 view: users {
-  sql_table_name: `users` ;;
+  # Dynamically points to the dataset assigned to the logged-in user
+  sql_table_name: `{{ _user_attributes['gcp_dataset_name'] }}.users` ;;
 
   dimension: id {
     primary_key: yes
@@ -19,14 +20,12 @@ view: users {
     sql: ${TABLE}.last_name ;;
   }
 
-  # Primary count measure for user IDs
   measure: count {
     type: count_distinct
     sql: ${id} ;;
     description: "Distinct count of user IDs"
   }
 
-  # Alternative count using standard count
   measure: total_registered_users {
     type: count
     description: "Total count of registered user records"
